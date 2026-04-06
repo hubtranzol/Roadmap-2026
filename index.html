@@ -16,14 +16,12 @@
   .progress-bar-track { flex: 1; height: 8px; background: var(--green-light); border-radius: 99px; overflow: hidden; }
   .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green-btn), var(--green-dark)); border-radius: 99px; transition: width 0.5s ease; }
   .progress-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+  .save-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--green-dark); color: #fff; font-size: 0.8rem; font-weight: 700; padding: 8px 20px; border-radius: 99px; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
+  .save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .road-scene { position: relative; width: 100%; height: 140px; overflow: hidden; margin-bottom: -20px; }
   .road-svg { width: 100%; height: 100%; }
   .slider-container { position: relative; width: 100%; overflow: hidden; padding: 0 0 2rem; touch-action: pan-y; }
-  .slider-track {
-    display: flex; gap: 1.25rem; padding: 1.5rem 2rem 1rem;
-    will-change: transform; cursor: grab;
-    transition: none;
-  }
+  .slider-track { display: flex; gap: 1.25rem; padding: 1.5rem 2rem 1rem; will-change: transform; cursor: grab; transition: none; }
   .slider-track.snapping { transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
   .slider-track:active { cursor: grabbing; }
   .stop-card { flex: 0 0 300px; background: var(--white); border-radius: 20px; border: 1.5px solid var(--green-mid); padding: 1.25rem 1.25rem 1rem; position: relative; box-shadow: 0 4px 20px var(--shadow); user-select: none; }
@@ -48,7 +46,7 @@
   .result-box { margin-top: 0.85rem; background: var(--green-shine); border: 1px solid var(--green-light); border-radius: 10px; padding: 0.6rem 0.75rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; line-height: 1.4; }
   .stop-number { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--green-btn); color: var(--white); font-size: 0.7rem; font-weight: 800; padding: 2px 10px; border-radius: 99px; box-shadow: 0 2px 8px var(--shadow); white-space: nowrap; }
   .stop-card.done .stop-number { background: var(--green-dark); }
-  .nav-area { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 0.5rem 1rem 1.5rem; position: relative; z-index: 10; }
+  .nav-area { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 0.5rem 1rem 1.5rem; }
   .nav-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--green-btn); background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; position: relative; overflow: hidden; box-shadow: 0 2px 10px var(--shadow); }
   .nav-btn::before { content: ''; position: absolute; top: 3px; left: 6px; width: 55%; height: 30%; background: rgba(255,255,255,0.6); border-radius: 99px; transform: rotate(-15deg); }
   .nav-btn:hover { background: var(--green-shine); transform: scale(1.08); }
@@ -85,25 +83,16 @@
       </defs>
       <rect width="800" height="140" fill="url(#skyG)"/>
       <g opacity="0.6">
-        <ellipse cx="60" cy="55" rx="22" ry="28" fill="#81c784"/>
-        <rect x="55" y="75" width="10" height="20" fill="#795548"/>
-        <ellipse cx="130" cy="48" rx="18" ry="24" fill="#66bb6a"/>
-        <rect x="124" y="66" width="9" height="18" fill="#6d4c41"/>
-        <ellipse cx="200" cy="58" rx="20" ry="26" fill="#a5d6a7"/>
-        <rect x="194" y="78" width="10" height="18" fill="#795548"/>
-        <ellipse cx="600" cy="52" rx="21" ry="27" fill="#81c784"/>
-        <rect x="594" y="73" width="10" height="19" fill="#795548"/>
-        <ellipse cx="670" cy="46" rx="17" ry="23" fill="#66bb6a"/>
-        <rect x="664" y="63" width="9" height="18" fill="#6d4c41"/>
-        <ellipse cx="740" cy="56" rx="20" ry="25" fill="#a5d6a7"/>
-        <rect x="734" y="76" width="9" height="18" fill="#795548"/>
+        <ellipse cx="60" cy="55" rx="22" ry="28" fill="#81c784"/><rect x="55" y="75" width="10" height="20" fill="#795548"/>
+        <ellipse cx="130" cy="48" rx="18" ry="24" fill="#66bb6a"/><rect x="124" y="66" width="9" height="18" fill="#6d4c41"/>
+        <ellipse cx="200" cy="58" rx="20" ry="26" fill="#a5d6a7"/><rect x="194" y="78" width="10" height="18" fill="#795548"/>
+        <ellipse cx="600" cy="52" rx="21" ry="27" fill="#81c784"/><rect x="594" y="73" width="10" height="19" fill="#795548"/>
+        <ellipse cx="670" cy="46" rx="17" ry="23" fill="#66bb6a"/><rect x="664" y="63" width="9" height="18" fill="#6d4c41"/>
+        <ellipse cx="740" cy="56" rx="20" ry="25" fill="#a5d6a7"/><rect x="734" y="76" width="9" height="18" fill="#795548"/>
       </g>
-      <rect x="0" y="88" width="800" height="52" fill="url(#roadG)" rx="0"/>
-      <g stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-dasharray="40,30">
-        <line x1="0" y1="114" x2="800" y2="114"/>
-      </g>
+      <rect x="0" y="88" width="800" height="52" fill="url(#roadG)"/>
+      <g stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-dasharray="40,30"><line x1="0" y1="114" x2="800" y2="114"/></g>
       <rect x="0" y="85" width="800" height="5" fill="#b0bec5" opacity="0.5"/>
-      <line x1="0" y1="88" x2="800" y2="88" stroke="#a5d6a7" stroke-width="1.5" opacity="0.5"/>
     </svg>
   </div>
 
@@ -122,51 +111,72 @@
   </div>
 </div>
 
+<div class="save-toast" id="save-toast">✓ Прогресс сохранён</div>
+
 <script>
+const STORAGE_KEY = 'roadmap2026-progress';
+
 const months = [
-  { num:"03", name:"Март", focus:"Подготовительный этап", tasks:["Подготовка новой фотозоны для съёмки","Приобретены камера Canon EOS R8 и штатив","Обучение: настройка камеры, свет, съёмка, базовая обработка","Рабочий формат съёмки посуды из стекла с обработкой","Первичный сбор обратной связи от оптовых клиентов"], result:"Обновлена техническая база для съёмки и подготовлена основа для визуального обновления карточек.", done:false },
-  { num:"04", name:"Апрель", focus:"Старт визуального обновления", tasks:["Запуск обновления упаковки для маркетплейсов","Обновление фото и упаковки в карточках маркетплейсов","Старт поэтапного обновления визуала карточек (апрель–сентябрь)","Подготовка открыток для вложения в заказы","Согласование партнёрских интеграций со смежными брендами"], result:"Начат основной этап визуального обновления продукции.", done:false },
-  { num:"05", name:"Май", focus:"Запуск ключевых оптовых инструментов", tasks:["Запуск персональных предложений для оптовых клиентов","Старт механики раннего доступа к новинкам для партнёров","Внедрение системы сертификатов и статусов партнёров","Запуск программы персональных подарков для ключевых клиентов"], result:"Усилена лояльность партнёров и запущены инструменты роста повторных заказов.", done:false },
-  { num:"06", name:"Июнь", focus:"Масштабирование оптового направления", tasks:["Анализ первых результатов персональных предложений","Расширение списка ключевых партнёров под систему статусов","Работа с новыми клиентами по СТМ","Развитие партнёрских интеграций"], result:"Повышена вовлечённость базы и начато расширение оптового канала.", done:false },
-  { num:"07", name:"Июль", focus:"Кросс-маркетинг и новый сайт", tasks:["Запуск первой волны кросс-маркетинга с бытовой химией","Закрепление механики ротации партнёров раз в квартал","Сбор статистики: CTR, конверсии, продажи за квартал","Старт разработки предложения по новому сайту","Подготовка ТЗ, структуры сайта, расчёт бюджета","Старт поиска специалиста для ведения соцсетей"], result:"Запущена квартальная модель кросс-маркетинга и подготовлена digital-инфраструктура.", done:false },
-  { num:"08", name:"Август", focus:"Запуск собственных соцсетей", tasks:["Запуск и наполнение VK-канала","Публикация контента по брендам и новинкам","Развитие визуального присутствия брендов в соцсетях","Подготовка площадок под дальнейшие коллаборации"], result:"Сформирован собственный канал коммуникации с аудиторией.", done:false },
-  { num:"09", name:"Сентябрь", focus:"Внешние интеграции", tasks:["Запуск коллабораций с блогерами","Интеграции с соцсетями и внешними площадками","Запуск первых рекламных размещений после месяца ведения каналов","Тестирование блогерских интеграций на маркетплейсы и бренд"], result:"Расширен охват аудитории и создан дополнительный трафик.", done:false },
-  { num:"10", name:"Октябрь", focus:"Аналитика и вторая волна кросс-маркетинга", tasks:["Квартальный сбор статистики по первой волне","Смена партнёра по кросс-маркетингу","Запуск второй волны размещений","Повторный сбор обратной связи от оптовых клиентов","Корректировка ассортимента и условий"], result:"Обновлены партнёрские размещения на основе реальной статистики.", done:false },
-  { num:"11", name:"Ноябрь", focus:"Высокий сезон", tasks:["Усиление карточек под сезонный спрос","Акцент на подарочные и комплектные решения","Персональные предложения ключевым оптовым клиентам","Подготовка сезонных маркетинговых механик"], result:"Усилены продажи в период высокого спроса.", done:false },
-  { num:"12", name:"Декабрь", focus:"Итоги года и стратегия 2027", tasks:["Анализ выполнения KPI","Оценка роста выручки","Итоговая аналитика по блогерам, соцсетям и кросс-маркетингу","Формирование стратегии на 2027 год"], result:"Подготовлен итоговый отчёт и стратегия масштабирования на следующий год.", done:false }
+  { num:"03", name:"Март", focus:"Подготовительный этап", tasks:["Подготовка новой фотозоны для съёмки","Приобретены камера Canon EOS R8 и штатив","Обучение: настройка камеры, свет, съёмка, базовая обработка","Рабочий формат съёмки посуды из стекла с обработкой","Первичный сбор обратной связи от оптовых клиентов"], result:"Обновлена техническая база для съёмки и подготовлена основа для визуального обновления карточек." },
+  { num:"04", name:"Апрель", focus:"Старт визуального обновления", tasks:["Запуск обновления упаковки для маркетплейсов","Обновление фото и упаковки в карточках маркетплейсов","Старт поэтапного обновления визуала карточек (апрель–сентябрь)","Подготовка открыток для вложения в заказы","Согласование партнёрских интеграций со смежными брендами"], result:"Начат основной этап визуального обновления продукции." },
+  { num:"05", name:"Май", focus:"Запуск ключевых оптовых инструментов", tasks:["Запуск персональных предложений для оптовых клиентов","Старт механики раннего доступа к новинкам для партнёров","Внедрение системы сертификатов и статусов партнёров","Запуск программы персональных подарков для ключевых клиентов"], result:"Усилена лояльность партнёров и запущены инструменты роста повторных заказов." },
+  { num:"06", name:"Июнь", focus:"Масштабирование оптового направления", tasks:["Анализ первых результатов персональных предложений","Расширение списка ключевых партнёров под систему статусов","Работа с новыми клиентами по СТМ","Развитие партнёрских интеграций"], result:"Повышена вовлечённость базы и начато расширение оптового канала." },
+  { num:"07", name:"Июль", focus:"Кросс-маркетинг и новый сайт", tasks:["Запуск первой волны кросс-маркетинга с бытовой химией","Закрепление механики ротации партнёров раз в квартал","Сбор статистики: CTR, конверсии, продажи за квартал","Старт разработки предложения по новому сайту","Подготовка ТЗ, структуры сайта, расчёт бюджета","Старт поиска специалиста для ведения соцсетей"], result:"Запущена квартальная модель кросс-маркетинга и подготовлена digital-инфраструктура." },
+  { num:"08", name:"Август", focus:"Запуск собственных соцсетей", tasks:["Запуск и наполнение VK-канала","Публикация контента по брендам и новинкам","Развитие визуального присутствия брендов в соцсетях","Подготовка площадок под дальнейшие коллаборации"], result:"Сформирован собственный канал коммуникации с аудиторией." },
+  { num:"09", name:"Сентябрь", focus:"Внешние интеграции", tasks:["Запуск коллабораций с блогерами","Интеграции с соцсетями и внешними площадками","Запуск первых рекламных размещений после месяца ведения каналов","Тестирование блогерских интеграций на маркетплейсы и бренд"], result:"Расширен охват аудитории и создан дополнительный трафик." },
+  { num:"10", name:"Октябрь", focus:"Аналитика и вторая волна кросс-маркетинга", tasks:["Квартальный сбор статистики по первой волне","Смена партнёра по кросс-маркетингу","Запуск второй волны размещений","Повторный сбор обратной связи от оптовых клиентов","Корректировка ассортимента и условий"], result:"Обновлены партнёрские размещения на основе реальной статистики." },
+  { num:"11", name:"Ноябрь", focus:"Высокий сезон", tasks:["Усиление карточек под сезонный спрос","Акцент на подарочные и комплектные решения","Персональные предложения ключевым оптовым клиентам","Подготовка сезонных маркетинговых механик"], result:"Усилены продажи в период высокого спроса." },
+  { num:"12", name:"Декабрь", focus:"Итоги года и стратегия 2027", tasks:["Анализ выполнения KPI","Оценка роста выручки","Итоговая аналитика по блогерам, соцсетям и кросс-маркетингу","Формирование стратегии на 2027 год"], result:"Подготовлен итоговый отчёт и стратегия масштабирования на следующий год." }
 ];
 
-const CARD_W = 300;
-const CARD_GAP = 20;
-const SIDE_PAD = 32;
+// Progress state — persisted via window.storage
+let done = new Array(months.length).fill(false);
 let current = 0;
-
-// Drag state
-let dragActive = false;
-let dragStartX = 0;
-let dragStartOffset = 0;
+const CARD_W = 300, CARD_GAP = 20, SIDE_PAD = 32;
 let currentOffset = 0;
-let didDrag = false;
+let dragActive = false, dragStartX = 0, dragStartOffset = 0, didDrag = false;
+let toastTimer = null;
+
+async function loadProgress() {
+  try {
+    const result = await window.storage.get(STORAGE_KEY);
+    if (result && result.value) {
+      const saved = JSON.parse(result.value);
+      if (Array.isArray(saved) && saved.length === months.length) done = saved;
+    }
+  } catch(e) {}
+  renderCards();
+  snapToCurrent(false);
+}
+
+async function saveProgress() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(done));
+    showToast();
+  } catch(e) {}
+}
+
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
 
 function getTrack() { return document.getElementById('slider-track'); }
 function getContainer() { return document.getElementById('slider-container'); }
 
 function cardOffset(idx) {
-  const containerW = getContainer().offsetWidth;
-  const cardTotal = CARD_W + CARD_GAP;
-  const maxOffset = Math.max(0, months.length * cardTotal - containerW + SIDE_PAD);
-  const ideal = idx * cardTotal - (containerW / 2) + CARD_W / 2;
-  return Math.max(0, Math.min(ideal, maxOffset));
+  const cW = getContainer().offsetWidth;
+  const ct = CARD_W + CARD_GAP;
+  const max = Math.max(0, months.length * ct - cW + SIDE_PAD);
+  return Math.max(0, Math.min(idx * ct - cW / 2 + CARD_W / 2, max));
 }
 
 function applyOffset(offset, animate) {
   const track = getTrack();
-  if (animate) {
-    track.classList.add('snapping');
-    setTimeout(() => track.classList.remove('snapping'), 380);
-  } else {
-    track.classList.remove('snapping');
-  }
+  if (animate) { track.classList.add('snapping'); setTimeout(() => track.classList.remove('snapping'), 380); }
+  else track.classList.remove('snapping');
   track.style.transform = `translateX(-${offset}px)`;
   currentOffset = offset;
 }
@@ -179,29 +189,27 @@ function snapToCurrent(animate) {
 function updateUI() {
   document.getElementById('btn-prev').disabled = current === 0;
   document.getElementById('btn-next').disabled = current === months.length - 1;
-  Array.from(getTrack().children).forEach((c, i) => {
-    c.classList.toggle('active-card', i === current);
-  });
+  Array.from(getTrack().children).forEach((c, i) => c.classList.toggle('active-card', i === current));
   updateDots();
   updateProgress();
 }
 
 function updateDots() {
-  const dotsEl = document.getElementById('dots');
-  dotsEl.innerHTML = '';
-  months.forEach((m, i) => {
+  const el = document.getElementById('dots');
+  el.innerHTML = '';
+  months.forEach((_, i) => {
     const d = document.createElement('div');
-    d.className = 'dot' + (i === current ? ' active' : '') + (m.done ? ' done-dot' : '');
+    d.className = 'dot' + (i === current ? ' active' : '') + (done[i] ? ' done-dot' : '');
     d.onclick = () => { current = i; snapToCurrent(true); };
-    dotsEl.appendChild(d);
+    el.appendChild(d);
   });
 }
 
 function updateProgress() {
-  const done = months.filter(m => m.done).length;
-  const pct = Math.round((done / months.length) * 100);
+  const count = done.filter(Boolean).length;
+  const pct = Math.round(count / months.length * 100);
   document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-label').textContent = done + ' / ' + months.length + ' месяцев';
+  document.getElementById('prog-label').textContent = count + ' / ' + months.length + ' месяцев';
 }
 
 function navigate(dir) {
@@ -209,8 +217,9 @@ function navigate(dir) {
   snapToCurrent(true);
 }
 
-function toggleDone(i) {
-  months[i].done = !months[i].done;
+async function toggleDone(i) {
+  done[i] = !done[i];
+  await saveProgress();
   renderCards();
   snapToCurrent(false);
 }
@@ -220,7 +229,7 @@ function renderCards() {
   track.innerHTML = '';
   months.forEach((m, i) => {
     const card = document.createElement('div');
-    card.className = 'stop-card' + (m.done ? ' done' : '') + (i === current ? ' active-card' : '');
+    card.className = 'stop-card' + (done[i] ? ' done' : '') + (i === current ? ' active-card' : '');
     card.innerHTML = `
       <div class="stop-number">Остановка ${i + 1}</div>
       <div class="card-header">
@@ -229,9 +238,9 @@ function renderCards() {
           <div class="month-name">${m.name} 2026</div>
           <div class="month-focus">${m.focus}</div>
         </div>
-        <button class="check-btn ${m.done ? 'checked' : ''}" data-idx="${i}" title="Отметить как выполненный">
+        <button class="check-btn ${done[i] ? 'checked' : ''}" data-idx="${i}" title="Отметить как выполненный">
           <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            ${m.done ? '<polyline points="20 6 9 17 4 12"/>' : '<polyline points="20 6 9 17 4 12" opacity="0.3"/>'}
+            ${done[i] ? '<polyline points="20 6 9 17 4 12"/>' : '<polyline points="20 6 9 17 4 12" opacity="0.3"/>'}
           </svg>
         </button>
       </div>
@@ -241,92 +250,67 @@ function renderCards() {
       </ul>
       <div class="result-box">📌 ${m.result}</div>
     `;
-    card.querySelector('.check-btn').addEventListener('click', e => {
-      e.stopPropagation();
-      toggleDone(i);
-    });
-    card.addEventListener('click', () => {
-      if (!didDrag) { current = i; snapToCurrent(true); }
-    });
+    card.querySelector('.check-btn').addEventListener('click', e => { e.stopPropagation(); toggleDone(i); });
+    card.addEventListener('click', () => { if (!didDrag) { current = i; snapToCurrent(true); } });
     track.appendChild(card);
   });
 }
 
-// Mouse drag — free scroll then snap
+// Drag
 const container = document.getElementById('slider-container');
-
 container.addEventListener('mousedown', e => {
   if (e.target.closest('.check-btn')) return;
-  dragActive = true;
-  didDrag = false;
-  dragStartX = e.clientX;
-  dragStartOffset = currentOffset;
+  dragActive = true; didDrag = false;
+  dragStartX = e.clientX; dragStartOffset = currentOffset;
   getTrack().classList.remove('snapping');
   e.preventDefault();
 });
-
 document.addEventListener('mousemove', e => {
   if (!dragActive) return;
   const delta = dragStartX - e.clientX;
   if (Math.abs(delta) > 4) didDrag = true;
-  const maxOffset = Math.max(0, months.length * (CARD_W + CARD_GAP) - getContainer().offsetWidth + SIDE_PAD);
-  const newOffset = Math.max(0, Math.min(dragStartOffset + delta, maxOffset));
-  applyOffset(newOffset, false);
+  const max = Math.max(0, months.length * (CARD_W + CARD_GAP) - getContainer().offsetWidth + SIDE_PAD);
+  applyOffset(Math.max(0, Math.min(dragStartOffset + delta, max)), false);
 });
-
-document.addEventListener('mouseup', e => {
+document.addEventListener('mouseup', () => {
   if (!dragActive) return;
   dragActive = false;
   if (!didDrag) return;
-
-  // Find which card center is closest to viewport center
-  const containerW = getContainer().offsetWidth;
-  const viewCenter = currentOffset + containerW / 2;
-  const cardTotal = CARD_W + CARD_GAP;
-  // Each card center = SIDE_PAD + i * cardTotal + CARD_W/2
+  const cW = getContainer().offsetWidth;
+  const viewCenter = currentOffset + cW / 2;
+  const ct = CARD_W + CARD_GAP;
   let best = 0, bestDist = Infinity;
   months.forEach((_, i) => {
-    const center = SIDE_PAD + i * cardTotal + CARD_W / 2;
-    const dist = Math.abs(center - viewCenter);
+    const dist = Math.abs(SIDE_PAD + i * ct + CARD_W / 2 - viewCenter);
     if (dist < bestDist) { bestDist = dist; best = i; }
   });
-  current = best;
-  snapToCurrent(true);
+  current = best; snapToCurrent(true);
   setTimeout(() => { didDrag = false; }, 50);
 });
-
-// Touch drag
 container.addEventListener('touchstart', e => {
   if (e.target.closest('.check-btn')) return;
-  dragStartX = e.touches[0].clientX;
-  dragStartOffset = currentOffset;
-  didDrag = false;
+  dragStartX = e.touches[0].clientX; dragStartOffset = currentOffset; didDrag = false;
   getTrack().classList.remove('snapping');
 }, { passive: true });
-
 container.addEventListener('touchmove', e => {
   const delta = dragStartX - e.touches[0].clientX;
   if (Math.abs(delta) > 4) didDrag = true;
-  const maxOffset = Math.max(0, months.length * (CARD_W + CARD_GAP) - getContainer().offsetWidth + SIDE_PAD);
-  applyOffset(Math.max(0, Math.min(dragStartOffset + delta, maxOffset)), false);
+  const max = Math.max(0, months.length * (CARD_W + CARD_GAP) - getContainer().offsetWidth + SIDE_PAD);
+  applyOffset(Math.max(0, Math.min(dragStartOffset + delta, max)), false);
 }, { passive: true });
-
 container.addEventListener('touchend', e => {
   if (!didDrag) return;
-  const containerW = getContainer().offsetWidth;
-  const viewCenter = currentOffset + containerW / 2;
-  const cardTotal = CARD_W + CARD_GAP;
+  const cW = getContainer().offsetWidth;
+  const viewCenter = currentOffset + cW / 2;
+  const ct = CARD_W + CARD_GAP;
   let best = 0, bestDist = Infinity;
   months.forEach((_, i) => {
-    const center = SIDE_PAD + i * cardTotal + CARD_W / 2;
-    const dist = Math.abs(center - viewCenter);
+    const dist = Math.abs(SIDE_PAD + i * ct + CARD_W / 2 - viewCenter);
     if (dist < bestDist) { bestDist = dist; best = i; }
   });
-  current = best;
-  snapToCurrent(true);
+  current = best; snapToCurrent(true);
   setTimeout(() => { didDrag = false; }, 50);
 }, { passive: true });
 
-renderCards();
-snapToCurrent(false);
+loadProgress();
 </script>
