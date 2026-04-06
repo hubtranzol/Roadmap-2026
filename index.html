@@ -16,8 +16,6 @@
   .progress-bar-track { flex: 1; height: 8px; background: var(--green-light); border-radius: 99px; overflow: hidden; }
   .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green-btn), var(--green-dark)); border-radius: 99px; transition: width 0.5s ease; }
   .progress-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
-  .save-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--green-dark); color: #fff; font-size: 0.8rem; font-weight: 700; padding: 8px 20px; border-radius: 99px; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
-  .save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .road-scene { position: relative; width: 100%; height: 140px; overflow: hidden; margin-bottom: -20px; }
   .road-svg { width: 100%; height: 100%; }
   .slider-container { position: relative; width: 100%; overflow: hidden; padding: 0 0 2rem; touch-action: pan-y; }
@@ -111,11 +109,7 @@
   </div>
 </div>
 
-<div class="save-toast" id="save-toast">✓ Прогресс сохранён</div>
-
 <script>
-const STORAGE_KEY = 'roadmap2026-progress';
-
 const months = [
   { num:"03", name:"Март", focus:"Подготовительный этап", tasks:["Подготовка новой фотозоны для съёмки","Приобретены камера Canon EOS R8 и штатив","Обучение: настройка камеры, свет, съёмка, базовая обработка","Рабочий формат съёмки посуды из стекла с обработкой","Первичный сбор обратной связи от оптовых клиентов"], result:"Обновлена техническая база для съёмки и подготовлена основа для визуального обновления карточек." },
   { num:"04", name:"Апрель", focus:"Старт визуального обновления", tasks:["Запуск обновления упаковки для маркетплейсов","Обновление фото и упаковки в карточках маркетплейсов","Старт поэтапного обновления визуала карточек (апрель–сентябрь)","Подготовка открыток для вложения в заказы","Согласование партнёрских интеграций со смежными брендами"], result:"Начат основной этап визуального обновления продукции." },
@@ -129,48 +123,20 @@ const months = [
   { num:"12", name:"Декабрь", focus:"Итоги года и стратегия 2027", tasks:["Анализ выполнения KPI","Оценка роста выручки","Итоговая аналитика по блогерам, соцсетям и кросс-маркетингу","Формирование стратегии на 2027 год"], result:"Подготовлен итоговый отчёт и стратегия масштабирования на следующий год." }
 ];
 
-// Progress state — persisted via window.storage
-let done = new Array(months.length).fill(false);
+// Март (индекс 0) выполнен по умолчанию
+let done = [true, false, false, false, false, false, false, false, false, false];
 let current = 0;
 const CARD_W = 300, CARD_GAP = 20, SIDE_PAD = 32;
 let currentOffset = 0;
 let dragActive = false, dragStartX = 0, dragStartOffset = 0, didDrag = false;
-let toastTimer = null;
-
-async function loadProgress() {
-  try {
-    const result = await window.storage.get(STORAGE_KEY);
-    if (result && result.value) {
-      const saved = JSON.parse(result.value);
-      if (Array.isArray(saved) && saved.length === months.length) done = saved;
-    }
-  } catch(e) {}
-  renderCards();
-  snapToCurrent(false);
-}
-
-async function saveProgress() {
-  try {
-    await window.storage.set(STORAGE_KEY, JSON.stringify(done));
-    showToast();
-  } catch(e) {}
-}
-
-function showToast() {
-  const t = document.getElementById('save-toast');
-  t.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
-}
 
 function getTrack() { return document.getElementById('slider-track'); }
 function getContainer() { return document.getElementById('slider-container'); }
 
 function cardOffset(idx) {
   const cW = getContainer().offsetWidth;
-  const ct = CARD_W + CARD_GAP;
-  const max = Math.max(0, months.length * ct - cW + SIDE_PAD);
-  return Math.max(0, Math.min(idx * ct - cW / 2 + CARD_W / 2, max));
+  const max = Math.max(0, months.length * (CARD_W + CARD_GAP) - cW + SIDE_PAD);
+  return Math.max(0, Math.min(idx * (CARD_W + CARD_GAP) - cW / 2 + CARD_W / 2, max));
 }
 
 function applyOffset(offset, animate) {
@@ -207,8 +173,7 @@ function updateDots() {
 
 function updateProgress() {
   const count = done.filter(Boolean).length;
-  const pct = Math.round(count / months.length * 100);
-  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-fill').style.width = Math.round(count / months.length * 100) + '%';
   document.getElementById('prog-label').textContent = count + ' / ' + months.length + ' месяцев';
 }
 
@@ -217,9 +182,8 @@ function navigate(dir) {
   snapToCurrent(true);
 }
 
-async function toggleDone(i) {
+function toggleDone(i) {
   done[i] = !done[i];
-  await saveProgress();
   renderCards();
   snapToCurrent(false);
 }
@@ -262,8 +226,7 @@ container.addEventListener('mousedown', e => {
   if (e.target.closest('.check-btn')) return;
   dragActive = true; didDrag = false;
   dragStartX = e.clientX; dragStartOffset = currentOffset;
-  getTrack().classList.remove('snapping');
-  e.preventDefault();
+  getTrack().classList.remove('snapping'); e.preventDefault();
 });
 document.addEventListener('mousemove', e => {
   if (!dragActive) return;
@@ -298,7 +261,7 @@ container.addEventListener('touchmove', e => {
   const max = Math.max(0, months.length * (CARD_W + CARD_GAP) - getContainer().offsetWidth + SIDE_PAD);
   applyOffset(Math.max(0, Math.min(dragStartOffset + delta, max)), false);
 }, { passive: true });
-container.addEventListener('touchend', e => {
+container.addEventListener('touchend', () => {
   if (!didDrag) return;
   const cW = getContainer().offsetWidth;
   const viewCenter = currentOffset + cW / 2;
@@ -312,5 +275,6 @@ container.addEventListener('touchend', e => {
   setTimeout(() => { didDrag = false; }, 50);
 }, { passive: true });
 
-loadProgress();
+renderCards();
+snapToCurrent(false);
 </script>
